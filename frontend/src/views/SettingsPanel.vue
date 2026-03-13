@@ -73,7 +73,7 @@
                 </div>
                 <label class="field toggle">
                     <span>始终置顶</span>
-                    <input type="checkbox" v-model="cfg.window.always_on_top" @change="save" />
+                    <input type="checkbox" v-model="cfg.window.always_on_top" @change="applyAlwaysOnTop" />
                 </label>
             </section>
 
@@ -151,6 +151,12 @@
     function detectProvider(url) {
         const match = providers.find(p => p.id !== 'custom' && p.url === url)
         return match ? match.id : 'custom'
+    }
+
+    function applyAlwaysOnTop() {
+        // 同时通知 Electron 主进程更新窗口属性，再保存配置
+        window.electronAPI?.setAlwaysOnTop(cfg.value.window.always_on_top)
+        save()
     }
 
     function selectProvider(p) {

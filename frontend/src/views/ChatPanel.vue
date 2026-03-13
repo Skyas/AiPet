@@ -78,7 +78,7 @@
 
     async function checkBackend() {
         try {
-            const res = await fetch('http://localhost:8000/health')
+            const res = await fetch('http://localhost:8001/health')
             backendOk.value = res.ok
         } catch {
             backendOk.value = false
