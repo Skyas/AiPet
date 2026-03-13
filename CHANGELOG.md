@@ -1,16 +1,23 @@
 # Changelog
 
-## [0.1.0] - 2025-03
+## [0.2.0] - 2026-03
+
+### Added
+- 设置面板新增 AI 服务商快速选择（OpenAI / Claude / Gemini / DeepSeek / Kimi / 智谱 / Ollama / LM Studio / 自定义）
+- 生成参数新增 Top-P 滑块，附悬停说明文字
+- 温度滑块补充范围说明
+
+### Changed
+- 聊天窗口和设置面板背景改为纯不透明 rgb()，透明度完全由 Electron 窗口 opacity 控制，100% = 完全不透明
+- 清空对话按钮改为带文字的红色标签按钮，更醒目
+- 路由跳转改用 replace 避免重复导航崩溃
+- 后端 ai_chat 支持 top_p 参数透传
+
+## [0.1.0] - 2026-03
 
 ### Added
 - 前后端基础通信（REST + WebSocket/Socket.IO）
-- 文本对话功能，支持流式输出（SSE）
-- 对话历史 SQLite 持久化
-- 基础悬浮窗 UI（无边框透明背景，始终置顶）
-- 配置管理系统（user_config.json + 热加载）
-- 模块开关基础框架（后端懒加载 + 前端动态路由）
-- Prompt 管理（角色卡 JSON + 编辑器）
-- 系统托盘图标 + 右键菜单
-- 全局热键 Ctrl+Shift+A 呼出/收起
-- Windows 一键启动脚本（install.bat / start.bat / dev.bat）
-- 语音/QQ 模块占位（Phase 2/4 实现）
+- 文本对话流式输出、SQLite 历史持久化
+- 悬浮窗 UI（无边框、置顶、系统托盘、全局热键 Ctrl+Shift+A）
+- 配置管理、模块开关框架、Prompt 编辑器
+- Windows 一键启动脚本
