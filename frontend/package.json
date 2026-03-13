@@ -1,0 +1,29 @@
+{
+  "name": "aipet-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "electron": "electron .",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "naive-ui": "^2.38.2",
+    "pinia": "^2.1.7",
+    "socket.io-client": "^4.7.5",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "concurrently": "^8.2.2",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "vite": "^5.2.12",
+    "wait-on": "^7.2.0"
+  }
+}
