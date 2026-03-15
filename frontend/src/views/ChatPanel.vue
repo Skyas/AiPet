@@ -5,6 +5,7 @@
             <span class="pet-name">{{ petName }}</span>
             <div class="titlebar-actions" style="-webkit-app-region: no-drag">
                 <button class="clear-btn" title="清空对话" @click="clearChat">🗑 清空</button>
+                <button class="icon-btn" title="游戏陪玩" @click="$router.replace('/vision')">👁</button>
                 <button class="icon-btn" title="设置" @click="$router.replace('/settings')">⚙</button>
                 <button class="icon-btn" title="收起" @click="hideWindow">─</button>
             </div>
@@ -21,8 +22,9 @@
             <div v-for="msg in chatStore.messages"
                  :key="msg.id"
                  class="message"
-                 :class="msg.role">
+                 :class="[msg.role, { proactive: msg.proactive }]">
                 <div class="bubble">
+                    <span class="proactive-badge" v-if="msg.proactive">AI 主动</span>
                     <span v-if="msg.role === 'assistant' && msg.streaming" class="typing-cursor">{{ msg.content }}<span class="cursor">▊</span></span>
                     <span v-else>{{ msg.content }}</span>
                 </div>
@@ -49,12 +51,15 @@
 </template>
 
 <script setup>
-    import { ref, computed, watch, nextTick, onMounted } from 'vue'
+    // ✅ 修复1：补上 onUnmounted
+    import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
     import { useChatStore } from '@/stores/chat'
     import { useSettingsStore } from '@/stores/settings'
+    import { useSocket } from '@/utils/socket'
 
     const chatStore = useChatStore()
     const settingsStore = useSettingsStore()
+    const { socket } = useSocket()
 
     const inputText = ref('')
     const messagesEl = ref(null)
@@ -108,10 +113,29 @@
         }
     }, { deep: true })
 
+    // ✅ 修复2：用 chatStore.addMessage 而不是 messages.value.push
+    // （如果 chatStore 没有 addMessage，用下方的直接 push 方式）
+    function handleProactiveMessage(data) {
+        chatStore.messages.push({
+            id: Date.now(),
+            role: 'assistant',
+            content: data.content,
+            proactive: true,
+        })
+    }
+
     onMounted(async () => {
         await checkBackend()
         await chatStore.loadHistory()
         setInterval(checkBackend, 5000)
+
+        // 监听 AI 主动消息推送
+        socket.on('proactive_message', handleProactiveMessage)
+    })
+
+    // ✅ 修复3：onUnmounted 现在已正确 import，可以正常使用
+    onUnmounted(() => {
+        socket.off('proactive_message', handleProactiveMessage)
     })
 </script>
 
@@ -120,7 +144,7 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        background: rgb(18, 18, 22); /* 纯不透明，透明度由 Electron 窗口控制 */
+        background: rgb(18, 18, 22);
         border-radius: 16px;
         border: 1px solid rgba(255,255,255,0.08);
         color: #e8e8ec;
@@ -260,6 +284,9 @@
         line-height: 1.6;
         white-space: pre-wrap;
         word-break: break-word;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
     }
 
     .user .bubble {
@@ -270,6 +297,19 @@
     .assistant .bubble {
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* 主动消息气泡加一圈青色边框，与普通回复区分 */
+    .message.proactive .bubble {
+        border-color: rgba(56,189,248,0.25);
+        background: rgba(56,189,248,0.05);
+    }
+
+    .proactive-badge {
+        font-size: 10px;
+        color: #38bdf8;
+        opacity: 0.7;
+        align-self: flex-start;
     }
 
     .cursor {

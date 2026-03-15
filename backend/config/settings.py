@@ -16,15 +16,42 @@ DEFAULT_CONFIG = {
         "text_api_key": "",
         "text_model": "gpt-4o-mini",
         "max_tokens": 2000,
-        "temperature": 0.8
+        "temperature": 0.8,
+        "top_p": 1.0
     },
     "vision": {
+        # ── 主开关 ────────────────────────────────────────────────────────────
         "enabled": False,
-        "api_url": "https://api.openai.com/v1",
+
+        # ── 视觉模型选择 ──────────────────────────────────────────────────────
+        # False = 自动路由（多模态文本模型 → 直接用；否则 → 硅基流动默认）
+        # True  = 使用下方用户自定义的 Vision 模型配置
+        "custom_vision_enabled": False,
+
+        # 硅基流动 Key（默认路由时使用；不填则视觉功能不可用）
+        # 注册免费：siliconflow.cn → 控制台 → API密钥 → 新建密钥
+        "siliconflow_key": "",
+
+        # 自定义 Vision 模型配置（custom_vision_enabled=True 时生效）
+        "api_url": "https://api.siliconflow.cn/v1",
         "api_key": "",
-        "model": "gpt-4o",
-        "interval": 30,
-        "capture_region": "fullscreen"
+        "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+
+        # ── 注入行为 ──────────────────────────────────────────────────────────
+        "inject_on_chat": True,
+
+        # ── 主动互动引擎 ──────────────────────────────────────────────────────
+        "proactive_enabled": False,
+        "proactive_check_interval": 45,
+        "proactive_user_cooldown": 60,
+        "proactive_min_interval": 120,
+        "proactive_session_id": "default",
+
+        # ── 屏幕记忆 ─────────────────────────────────────────────────────────
+        "memory_size": 5,
+
+        # ── 截图 ─────────────────────────────────────────────────────────────
+        "capture_region": "fullscreen",
     },
     "voice": {
         "enabled": False,
@@ -60,7 +87,6 @@ def load_config() -> dict:
         return DEFAULT_CONFIG
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
-    # 深合并：用默认值补全缺失字段
     merged = _deep_merge(DEFAULT_CONFIG, data)
     return merged
 
