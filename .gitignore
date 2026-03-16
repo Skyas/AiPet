@@ -34,3 +34,7 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# Visual Studio
+.vs/
+*.slnx
