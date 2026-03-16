@@ -1,0 +1,50 @@
+{
+  "general": {
+    "language": "zh-CN",
+    "hotkey": "Ctrl+Shift+A",
+    "auto_start": false
+  },
+  "ai": {
+    "text_api_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+    "text_api_key": "AIzaSyDYZpE1QLGuls11jzxgn-HRrGX5rr8J1bI",
+    "text_model": "gemini-3-flash-preview",
+    "max_tokens": 2000,
+    "temperature": 0.8
+  },
+  "vision": {
+    "enabled": false,
+    "api_url": "https://api.openai.com/v1",
+    "api_key": "",
+    "model": "gpt-4o",
+    "interval": 30,
+    "capture_region": "fullscreen"
+  },
+  "voice": {
+    "enabled": false,
+    "wake_word_enabled": true,
+    "stt_enabled": true,
+    "tts_enabled": true,
+    "wake_word": "你好小爱",
+    "wake_word_sensitivity": 0.5,
+    "stt_model": "faster-whisper",
+    "tts_voice": "zh-CN-XiaoxiaoNeural"
+  },
+  "qq": {
+    "enabled": false,
+    "ws_port": 8765,
+    "monitor_groups": [],
+    "monitor_privates": [],
+    "auto_reply": false,
+    "notify_method": "popup"
+  },
+  "window": {
+    "width": 300,
+    "height": 400,
+    "opacity": 1,
+    "always_on_top": true,
+    "position": {
+      "x": 100,
+      "y": 100
+    }
+  }
+}
