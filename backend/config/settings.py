@@ -12,12 +12,31 @@ DEFAULT_CONFIG = {
         "auto_start": False
     },
     "ai": {
+        # ── 当前激活的厂商 ID（与 providers 中的 key 对应）────────────────────
+        "active_provider": "custom",
+        # ── 后端实际读取的三个字段（由前端切换厂商时自动同步写入）────────────
         "text_api_url": "https://api.openai.com/v1",
         "text_api_key": "",
         "text_model": "gpt-4o-mini",
         "max_tokens": 2000,
         "temperature": 0.8,
-        "top_p": 1.0
+        "top_p": 1.0,
+        # ── 各厂商独立存储的 api_key + 上次使用的 model ──────────────────────
+        # 切换厂商时前端从这里恢复，不会互相覆盖
+        "providers": {
+            "openai":      {"api_key": "", "model": "gpt-4o-mini"},
+            "deepseek":    {"api_key": "", "model": "deepseek-chat"},
+            "gemini":      {"api_key": "", "model": "gemini-3.0-flash"},
+            "claude":      {"api_key": "", "model": "claude-3-5-haiku-20241022"},
+            "moonshot":    {"api_key": "", "model": "moonshot-v1-8k"},
+            "zhipu":       {"api_key": "", "model": "glm-4-flash"},
+            "siliconflow": {"api_key": "", "model": "deepseek-ai/DeepSeek-V3"},
+            "ollama":      {"api_key": "ollama", "model": "qwen2.5:7b"},
+            "lmstudio":    {"api_key": "lm-studio", "model": "local-model"},
+            "doubao":      {"api_key": "", "model": "doubao-seed-2-0-pro-260215"},
+            "qwen":        {"api_key": "", "model": "qwen3.5-plus"},
+            "custom":      {"api_key": "", "model": "", "url": ""}
+        }
     },
     "vision": {
         # ── 主开关 ────────────────────────────────────────────────────────────

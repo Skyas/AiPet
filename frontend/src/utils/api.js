@@ -3,7 +3,7 @@
 const BASE_URL = 'http://localhost:8001'
 const http = axios.create({ baseURL: BASE_URL, timeout: 30000 })
 
-// ── 对话 API（Phase 1，不变）──────────────────────────────────────────────────
+// ── 对话 API ──────────────────────────────────────────────────────────────────
 export const chatAPI = {
     async sendStream(message, sessionId = 'default', promptId = 'default_assistant', onToken, onDone) {
         const response = await fetch(`${BASE_URL}/api/chat/send`, {
@@ -35,15 +35,16 @@ export const chatAPI = {
     clearHistory: (sid) => http.delete(`/api/chat/history/${sid}`),
 }
 
-// ── 设置 API（Phase 1，不变）──────────────────────────────────────────────────
+// ── 设置 API ──────────────────────────────────────────────────────────────────
 export const settingsAPI = {
     get: () => http.get('/api/settings'),
     update: (data) => http.put('/api/settings', data),
+    reload: () => http.post('/api/settings/reload'),
     toggleVoice: (enabled) => http.post('/api/settings/modules/voice', { enabled }),
     toggleQQ: (enabled) => http.post('/api/settings/modules/qq', { enabled }),
 }
 
-// ── Prompt API（Phase 1，不变）────────────────────────────────────────────────
+// ── Prompt API ────────────────────────────────────────────────────────────────
 export const promptsAPI = {
     list: () => http.get('/api/prompts'),
     get: (id) => http.get(`/api/prompts/${id}`),
@@ -51,21 +52,8 @@ export const promptsAPI = {
     delete: (id) => http.delete(`/api/prompts/${id}`),
 }
 
-// ── 屏幕 / Vision API（Phase 2 新增）─────────────────────────────────────────
-//
-// analyze() 的回调风格与 chatAPI.sendStream() 完全一致，
-// 前端组件只管提供回调，不用关心任何流解析细节。
+// ── 屏幕 / Vision API ─────────────────────────────────────────────────────────
 export const screenAPI = {
-    /**
-     * 手动触发一次截图 + 视觉分析 + AI 点评（SSE 流式）。
-     *
-     * 回调说明：
-     *   onStatus(key)        — 阶段变化：'capturing' / 'analyzing_vision' / 'generating'
-     *   onVisionDesc(text)   — 视觉模型返回的原始画面描述（可选展示）
-     *   onToken(text)        — AI 点评的流式 token，逐字拼接
-     *   onDone(fullText)     — 流结束，fullText 是完整点评
-     *   onError(message)     — 发生错误
-     */
     async analyze({ onStatus, onVisionDesc, onToken, onDone, onError } = {}) {
         let response
         try {
@@ -107,23 +95,10 @@ export const screenAPI = {
         }
     },
 
-    /** 启动主动互动引擎 */
     startProactive: () => http.post('/api/screen/proactive/start'),
-
-    /** 停止主动互动引擎 */
     stopProactive: () => http.post('/api/screen/proactive/stop'),
-
-    /** 获取引擎状态与最近一次分析摘要 */
-    getStatus: async () => {
-        const res = await http.get('/api/screen/status')
-        return res.data
-    },
-
-    /** 获取系统显示器列表（供设置界面使用） */
-    getMonitors: async () => {
-        const res = await http.get('/api/screen/monitors')
-        return res.data
-    },
+    getStatus: async () => (await http.get('/api/screen/status')).data,
+    getMonitors: async () => (await http.get('/api/screen/monitors')).data,
 }
 
 export const healthCheck = () => http.get('/health')
