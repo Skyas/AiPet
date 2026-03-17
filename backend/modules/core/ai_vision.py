@@ -31,7 +31,7 @@ _MULTIMODAL_PATTERNS = [
 ]
 
 _DEFAULT_VISION_URL   = "https://api.siliconflow.cn/v1"
-_DEFAULT_VISION_MODEL = "Qwen/Qwen2.5-VL-7B-Instruct"
+_DEFAULT_VISION_MODEL = "THUDM/GLM-4.1V-9B-Thinking"
 
 
 def is_text_model_multimodal(config: dict) -> bool:
@@ -140,7 +140,7 @@ class AIVisionModule:
             vision_prompt = (
                 "请用中文简洁描述这张屏幕截图中用户正在做什么。"
                 "重点关注：运行的游戏或应用、当前操作、关键 UI 元素（如地图、血量等）。"
-                "保持客观，100 字以内。"
+                "保持客观，30 字以内。"
             )
 
         client, model = self._get_client_and_model()

@@ -54,7 +54,7 @@ DEFAULT_CONFIG = {
         # 自定义 Vision 模型配置（custom_vision_enabled=True 时生效）
         "api_url": "https://api.siliconflow.cn/v1",
         "api_key": "",
-        "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+        "model": "THUDM/GLM-4.1V-9B-Thinking",
 
         # ── 注入行为 ──────────────────────────────────────────────────────────
         "inject_on_chat": True,
