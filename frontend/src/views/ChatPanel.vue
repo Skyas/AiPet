@@ -1,13 +1,13 @@
 <template>
-    <div class="chat-panel">
+    <div class="chat-panel" @contextmenu.prevent="showContextMenu">
         <!-- 标题栏 -->
         <div class="titlebar" style="-webkit-app-region: drag">
             <span class="pet-name">{{ petName }}</span>
             <div class="titlebar-actions" style="-webkit-app-region: no-drag">
-                <button class="clear-btn" title="清空对话" @click="clearChat">🗑 清空</button>
-                <button class="icon-btn" title="观察记录" @click="$router.replace('/vision')">👁</button>
-                <button class="icon-btn" title="设置" @click="$router.replace('/settings')">⚙</button>
-                <button class="icon-btn" title="收起" @click="hideWindow">─</button>
+                <button class="action-btn btn-danger" @click="clearChat">🗑 清空</button>
+                <button class="action-btn btn-default" @click="$router.replace('/vision')">👁 陪玩</button>
+                <button class="action-btn btn-default" @click="$router.replace('/settings')">⚙ 设置</button>
+                <button class="action-btn btn-purple" @click="enterBallMode">● 悬浮</button>
             </div>
         </div>
 
@@ -212,6 +212,14 @@
         window.electronAPI?.toggleWindow()
     }
 
+    function enterBallMode() {
+        window.electronAPI?.enterBallMode()
+    }
+
+    function showContextMenu(e) {
+        window.electronAPI?.showChatContextMenu()
+    }
+
     function scrollMessages() {
         nextTick(() => {
             if (messagesEl.value)
@@ -241,6 +249,8 @@
             streaming: false,
         })
         scrollMessages()
+        // 悬浮球模式下通过气泡展示（主进程会判断是否在球模式）
+        window.electronAPI?.showBubble?.(data.content)
     }
 
     onMounted(async () => {
@@ -255,6 +265,17 @@
         } catch { }
 
         socket.on('proactive_message', handleProactiveMessage)
+
+        // 接收来自悬浮球窗口的分析结果，写入本地聊天历史
+        window.electronAPI?.onAddMessage?.((msg) => {
+            chatStore.messages.push({ id: Date.now(), streaming: false, ...msg })
+            scrollMessages()
+        })
+
+        // 右键菜单动作
+        window.electronAPI?.onContextAction?.((action) => {
+            if (action === 'clear') clearChat()
+        })
     })
 
     onUnmounted(() => {
@@ -297,23 +318,9 @@
         align-items: center;
     }
 
-    .icon-btn {
-        background: none;
-        border: none;
-        color: #888;
-        font-size: 13px;
-        padding: 3px 6px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background 0.15s;
-    }
-    .icon-btn:hover { background: rgba(255,255,255,0.08); color: #ddd; }
-
-    .clear-btn {
-        background: rgba(239,68,68,0.08);
-        border: 1px solid rgba(239,68,68,0.2);
-        color: #f87171;
+    .action-btn {
         font-size: 11px;
+        font-weight: 500;
         padding: 3px 8px;
         border-radius: 6px;
         cursor: pointer;
@@ -321,8 +328,29 @@
         display: flex;
         align-items: center;
         gap: 3px;
+        white-space: nowrap;
+        font-family: inherit;
     }
-    .clear-btn:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.4); }
+    .btn-danger {
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.2);
+        color: #f87171;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.4); }
+
+    .btn-default {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #aaa;
+    }
+    .btn-default:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: #ddd; }
+
+    .btn-purple {
+        background: rgba(139,92,246,0.1);
+        border: 1px solid rgba(139,92,246,0.25);
+        color: #c9b8f8;
+    }
+    .btn-purple:hover { background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.4); }
 
     /* ── 状态栏 ──────────────────────────────────────────────────────────── */
     .status-bar {
